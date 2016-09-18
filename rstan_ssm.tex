@@ -1,0 +1,42 @@
+\documentclass[dvipdfmx,12pt]{beamer}
+\usepackage{bxdpx-beamer}
+\usepackage{minijs}
+%\usepackage{helvet}
+%\usepackage[helvet]{sfmath}
+\usepackage{cmbright}
+%\usepackage{iwona}
+
+\renewcommand{\kanjifamilydefault}{\gtdefault}
+
+\begin{document}
+
+\title{RStanで状態空間モデル}
+\author{伊東宏樹}
+\date{2016-10-29}
+\maketitle
+
+%% 状態空間モデル
+\begin{frame}{状態空間モデル}
+\begin{itemize}
+\item 潜在状態
+\item 観測値
+\end{itemize}
+
+\end{frame}
+
+%% DLM
+\begin{frame}{Gaussian Dynamic Linear Model}
+  \begin{align*}
+    y_t &\sim N(F^{\prime} \theta_t, V) \\
+    \theta_t &\sim N(G \theta_{t-1}, W) \\
+    \theta_0 &\sim N(m_0, C_0)
+  \end{align*}
+
+\end{frame}
+
+%% Stan
+\begin{frame}{Stan}
+
+\end{frame}
+
+\end{document}

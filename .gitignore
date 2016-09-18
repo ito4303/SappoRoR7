@@ -178,3 +178,8 @@ TSWLatexianTemp*
 
 # KBibTeX
 *~[0-9]*
+
+# R
+.RData
+*.Rout
+*.pdf
