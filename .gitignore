@@ -183,3 +183,6 @@ TSWLatexianTemp*
 .RData
 *.Rout
 *.pdf
+
+# Stan
+*.rda

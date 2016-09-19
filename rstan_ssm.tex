@@ -25,17 +25,58 @@
 \end{frame}
 
 %% DLM
-\begin{frame}{Gaussian Dynamic Linear Model}
+\begin{frame}{動的線形モデル}
+  観測方程式
   \begin{align*}
-    y_t &\sim N(F^{\prime} \theta_t, V) \\
-    \theta_t &\sim N(G \theta_{t-1}, W) \\
+    y_t &\sim N(F^{\prime} \theta_t, V)
+  \end{align*}
+
+  状態方程式
+  \begin{align*}
+    \theta_t &\sim N(G \theta_{t-1}, W)
+  \end{align*}
+
+  初期値
+  \begin{align*}
     \theta_0 &\sim N(m_0, C_0)
+  \end{align*}
+
+\end{frame}
+
+%% トレンドモデル
+\begin{frame}{トレンドモデル}
+  観測方程式
+  \begin{align*}
+    y_{t} &= \theta_{1,t} + w_{t} \\
+    \rightarrow \\
+    y_{t} &= \left(\begin{array}{cc}1 & 0\end{array}\right)
+      \left(\begin{array}{c}\theta_{1,t} \\ \theta_{2,t} \end{array}\right) + w_{t} 
+  \end{align*}
+
+  状態方程式
+  \begin{align*}
+    \theta_{1,t} &= \theta_{1,t-1} + \theta_{2,t-1} + v_{1,t} \\
+    \theta_{2,t} &= \theta_{2,t-1} + v_{2,t} \\
+    \rightarrow \\
+    \left(\begin{array}{c}\theta_{1,t} \\ \theta_{2,t}\end{array}\right) &=
+    \left(\begin{array}{cc}1 & 1 \\ 0 & 1 \end{array}\right)
+    \left(\begin{array}{c}\theta_{1,t-1} \\ \theta_{2,t-1}\end{array}\right) +
+    \left(\begin{array}{c}v_{1,t} \\ v_{2,t}\end{array}\right)
   \end{align*}
 
 \end{frame}
 
 %% Stan
 \begin{frame}{Stan}
+
+\end{frame}
+
+%% gaussian_dlm_obs()
+\begin{frame}{gaussian\_dlm\_obs}
+
+  \textit{y}~\textasciitilde~\textbf{gaussian\_dlm\_obs}(\textit{F, G, V, W, m0, C0});
+
+カルマンフィルタのパラメータ(分散)を推定する。
 
 \end{frame}
 
