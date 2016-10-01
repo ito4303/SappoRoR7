@@ -19,6 +19,10 @@ set.seed(1234)
 ## ナイル川のデータ
 data(Nile)
 
+##
+## ローカルレベルモデル
+##
+
 ## Stanにわたすデータのリスト
 stan_data <- list(N = length(Nile),
                   y = matrix(Nile, 1),
@@ -36,13 +40,8 @@ print(fit)
 ## パラメータの事後平均をとりだす
 s2 <- get_posterior_mean(fit, pars = "s2")[, "mean-all chains"]
 
-## dlmでのモデル定義
-buildFunc <- function(theta) {
-    dlmModPoly(order = 1, dV = theta[1], dW = theta[2])
-}
-
-## Stanで推定したパラメータを適用
-mod <- buildFunc(s2)
+## Stanで推定したパラメータをつかって、dlmのモデル定義
+mod <- dlmModPoly(order = 1, dV = s2[1], dW = s2[2])
 
 ## カルマンスムーザー
 smo <- dlmSmooth(Nile, mod)
@@ -52,9 +51,40 @@ plot(Nile, type = "l",
      xlab = "Year", ylab = "Flow", las = 1)
 lines(smo$s, col = 2)
 
+## カルマンフィルター
+filt <- dlmFilter(Nile, mod)
+
+## 状態
+m <- filt$m[-1]
+
+## 予測
+## 予測する年数
+nyear <- 10
+
+## 予測期間の初期値の設定
+m0(mod) <- tail(m, 1)
+C0(mod) <- diag(1) * s2[2]
+
+fore <- dlmForecast(mod, nAhead = nyear)
+
+## 観測値の予測の80%信頼区間
+lim <- outer(sapply(fore$Q, function(x) sqrt(diag(x))),
+             qnorm(c(0.1, 0.9))) +
+       cbind(fore$f, fore$f)
+
+plot(Nile, type = "l",
+     xlim = c(start(Nile)[1], end(Nile)[1] + nyear),
+     ylim = c(min(lim, Nile), max(lim, Nile)),
+     xlab = "Year", ylab = "Flow", las = 1)
+
+lines(x = (end(Nile)[1] + 1):(end(Nile)[1] + nyear),
+      y = fore$f[, 1], col = 4, lty = 2)
+for (i in 1:2)
+    lines(x = (end(Nile)[1] + 1):(end(Nile)[1] + nyear),
+          y = lim[, i], col = 4, lty = 2)
 
 ##
-## 2階差分
+## トレンドモデル
 ##
 
 ## Stanにわたすデータのリスト
@@ -75,10 +105,7 @@ print(fit)
 s2 <- get_posterior_mean(fit, pars = "s2")[, "mean-all chains"]
 
 ## dlmでのモデル定義
-buildFunc <- function(theta) {
-    dlmModPoly(order = 2, dV = theta[1], dW = theta[2:3])
-}
-mod <- buildFunc(s2)
+mod <- dlmModPoly(order = 2, dV = s2[1], dW = s2[2:3])
 
 ## カルマンスムーザー
 smo <- dlmSmooth(Nile, mod)
@@ -95,3 +122,35 @@ plot(smo$s[, 2], type = "l", col = 2,
      xlab = "Year", ylab = "Slope", las = 1)
 
 par(mfrow = c(1, 1))
+
+## カルマンフィルター
+filt <- dlmFilter(Nile, mod)
+
+## 状態
+m <- filt$m[-1, ]
+
+## 予測
+## 予測する年数
+nyear <- 10
+
+## 予測期間の初期値の設定
+m0(mod) <- m[length(Nile), ]
+C0(mod) <- diag(2) * s2[2:3]
+
+fore <- dlmForecast(mod, nAhead = nyear)
+
+## 観測値の予測の80%信頼区間
+lim <- outer(sapply(fore$Q, function(x) sqrt(diag(x))),
+             qnorm(c(0.1, 0.9))) +
+       cbind(fore$f, fore$f)
+
+plot(Nile, type = "l",
+     xlim = c(start(Nile)[1], end(Nile)[1] + nyear),
+     ylim = c(min(lim, Nile), max(lim, Nile)),
+     xlab = "Year", ylab = "Flow", las = 1)
+
+lines(x = (end(Nile)[1] + 1):(end(Nile)[1] + nyear),
+      y = fore$f[, 1], col = 4, lty = 2)
+for (i in 1:2)
+    lines(x = (end(Nile)[1] + 1):(end(Nile)[1] + nyear),
+          y = lim[, i], col = 4, lty = 2)
