@@ -181,6 +181,7 @@ TSWLatexianTemp*
 
 # R
 .RData
+.Rhistory
 *.Rout
 *.pdf
 
