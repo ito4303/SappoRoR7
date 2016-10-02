@@ -1,16 +1,16 @@
-// 1階差分モデル
+// ローカルレベルモデル
 
 data {
   int<lower=0>  N;   // レコードの数
   matrix[1, N]  y;   // データ
-  real          m0; // 状態の初期値
-  cov_matrix[1] C0; // 共分散の初期値
+  real          m0;  // 状態の初期値
+  cov_matrix[1] C0;  // 共分散の初期値
 }
 
 transformed data {
   matrix[1, 1]  F;
   matrix[1, 1]  G;
-  vector[1]     vm0;
+  vector[1]     vm0; // サイズ1のベクトル
 
   F[1, 1] = 1;
   G[1, 1] = 1;

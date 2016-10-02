@@ -183,7 +183,9 @@ TSWLatexianTemp*
 .RData
 .Rhistory
 *.Rout
-*.pdf
+.Rproj.user
+*.Rproj
 
 # Stan
 *.rda
+
