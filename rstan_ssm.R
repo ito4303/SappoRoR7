@@ -41,13 +41,12 @@ fit <- stan("dlm1.stan", data = stan_data,
 print(fit)
 
 ## パラメータの事後平均をとりだす
-s2 <- get_posterior_mean(fit, pars = "s2")
-s2.mean <- s2[, "mean-all chains"]
+s2 <- get_posterior_mean(fit, pars = "s2")[, "mean-all chains"]
 
 ## Stanで推定したパラメータをつかって、dlmのモデル定義
-mod <- dlmModPoly(order = 1, dV = s2.mean[1], dW = s2.mean[2])
+mod <- dlmModPoly(order = 1, dV = s2[1], dW = s2[2])
 
-## カルマンスムーザー
+## 平滑化
 smo <- dlmSmooth(Nile, mod)
 
 ## グラフ表示
@@ -115,7 +114,7 @@ s2 <- get_posterior_mean(fit, pars = "s2")[, "mean-all chains"]
 ## dlmでのモデル定義
 mod <- dlmModPoly(order = 2, dV = s2[1], dW = s2[2:3])
 
-## カルマンスムーザー
+## 平滑化
 smo <- dlmSmooth(Nile, mod)
 
 ## グラフ表示
