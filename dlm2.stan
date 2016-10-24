@@ -2,8 +2,8 @@
 
 data {
   int<lower=0>  N;  // レコードの数
-  matrix[1, N]  y;  // データ
-  vector[2]     m0;
+  matrix[1, N]  Y;  // データ
+  vector[2]     M0;
   cov_matrix[2] C0;
 }
 
@@ -27,16 +27,16 @@ parameters {
 }
 
 transformed parameters {
-  vector[1]     V;
-  cov_matrix[2] W;
+  vector[1]     v;
+  cov_matrix[2] w;
 
-  V[1] = s2[1];
-  W[1, 1] = s2[2];
-  W[1, 2] = 0;
-  W[2, 1] = 0;
-  W[2, 2] = s2[3];
+  v[1] = s2[1];
+  w[1, 1] = s2[2];
+  w[1, 2] = 0;
+  w[2, 1] = 0;
+  w[2, 2] = s2[3];
 }
 
 model {
-  y ~ gaussian_dlm_obs(F, G, V, W, m0, C0);
+  Y ~ gaussian_dlm_obs(F, G, v, w, M0, C0);
 }

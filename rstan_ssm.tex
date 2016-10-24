@@ -99,7 +99,7 @@
   \begin{itemize}
   \item 観測方程式と状態方程式をそのまま\textsf{Stan}コードにすれば、状態の推定ができる
     \begin{itemize}
-    \item 『岩波データサイエンスVol.1』や『StanとRでベイズ統計モデリング』
+    \item 『岩波データサイエンスVol.1』や『StanとRでベイズ統計モデリング』の松浦さんのコードを参照
     \end{itemize}
   \item 今回はあえて、\textsf{Stan}の\texttt{gaussian\_dlm\_obs()}分布と、\textsf{R}の\textsf{dlm}パッケージを使ってみる
   \end{itemize}
@@ -116,6 +116,19 @@
   \end{itemize}
 \end{frame}
 
+%% カルマンフィルター
+\begin{frame}{カルマンフィルター}
+  \begin{itemize}
+  \item 行列計算により、フィルタリング・平滑化・予測をおこなう
+     \begin{description}
+     \item[フィルタリング] $\{y_1,y_2,\dots,y_t\}$から$\theta_t$を推定
+     \item[平滑化] $\{y_1,y_2,\dots,y_t\}$から$\{\theta_1,\theta_2,\dots,\theta_t\}$を推定
+     \item[予測] $\{y_1,y_2,\dots,y_t\}$から$\{\theta_{t+1},\theta_{t+2},\dots\}$および$\{y_{t+1},y_{t+2},\dots\}$を推定
+     \end{description}
+  \item パラメータとして、観測方程式・状態方程式の共分散行列（と初期値）が必要
+  \end{itemize}
+\end{frame}
+
 %% dlm
 \begin{frame}{dlmパッケージ}
   \begin{itemize}
@@ -125,16 +138,6 @@
   \item パラメータのベイズ推定
   \end{itemize}
 \end{frame}
-
-%% カルマンフィルター
-\begin{frame}{カルマンフィルター}
-  \begin{description}
-  \item[フィルター] $\{y_1,y_2,\dots,y_t\}$から$\theta_t$を推定
-  \item[平滑化] $\{y_1,y_2,\dots,y_t\}$から$\{\theta_1,\theta_2,\dots,\theta_t\}$を推定
-  \item[予測] $\{y_1,y_2,\dots,y_t\}$から$\{\theta_{t+1},\theta_{t+2},\dots\}$および$\{y_{t+1},y_{t+2},\dots\}$を推定
-  \end{description}
-\end{frame}
-
 
 %% データ
 \begin{frame}[fragile]{データ}
@@ -153,8 +156,8 @@ data(Nile)
   \begin{lstlisting}[language=Stan]
 data {
   int<lower=0>  N;   // レコードの数
-  matrix[1, N]  y;   // データ
-  real          m0;  // 状態の初期値
+  matrix[1, N]  Y;   // データ
+  real          M0;  // 状態の初期値
   cov_matrix[1] C0;  // 共分散の初期値
 }
   \end{lstlisting}
@@ -165,11 +168,11 @@ data {
 transformed data {
   matrix[1, 1]  F;
   matrix[1, 1]  G;
-  vector[1]     vm0; // サイズ1のベクトル
+  vector[1]     m0; // サイズ1のベクトル
 
   F[1, 1] = 1;
   G[1, 1] = 1;
-  vm0[1] = m0;
+  m0[1] = M0;
 }
   \end{lstlisting}
 \end{frame}
@@ -181,11 +184,11 @@ parameters {
 }
 
 transformed parameters {
-  vector[1]     V;
-  cov_matrix[1] W;
+  vector[1]     v;
+  cov_matrix[1] w;
 
-  V[1] = s2[1];
-  W[1, 1] = s2[2];
+  v[1] = s2[1];
+  w[1, 1] = s2[2];
 }
   \end{lstlisting}
 \end{frame}
@@ -193,7 +196,7 @@ transformed parameters {
 \begin{frame}[fragile]{Stanコード: modelブロック}
   \begin{lstlisting}[language=Stan]
 model {
-  y ~ gaussian_dlm_obs(F, G, V, W, vm0, C0);
+  y ~ gaussian_dlm_obs(F, G, v, w, m0, C0);
 }
   \end{lstlisting}
 \end{frame}
@@ -203,8 +206,8 @@ model {
   \begin{lstlisting}[language=R]
 ## Stanにわたすデータのリスト
 stan_data <- list(N = length(Nile),
-                  y = matrix(Nile, 1),
-                  m0 = 100,
+                  Y = matrix(Nile, 1),
+                  M0 = 100,
                   C0 = matrix(100, 1, 1))
 
 ## あてはめ
@@ -293,8 +296,8 @@ smo <- dlmSmooth(Nile, mod)
   \begin{lstlisting}[language=Stan]
 data {
   int<lower=0>  N;  // レコードの数
-  matrix[1, N]  y;  // データ
-  vector[2]     m0;
+  matrix[1, N]  Y;  // データ
+  vector[2]     M0;
   cov_matrix[2] C0;
 }
   \end{lstlisting}
@@ -326,14 +329,14 @@ parameters {
 }
 
 transformed parameters {
-  vector[1]     V;
-  cov_matrix[2] W;
+  vector[1]     v;
+  cov_matrix[2] w;
 
-  V[1] = s2[1];
-  W[1, 1] = s2[2];
-  W[1, 2] = 0;
-  W[2, 1] = 0;
-  W[2, 2] = s2[3];
+  v[1] = s2[1];
+  w[1, 1] = s2[2];
+  w[1, 2] = 0;
+  w[2, 1] = 0;
+  w[2, 2] = s2[3];
 }
   \end{lstlisting}
 \end{frame}
@@ -341,7 +344,7 @@ transformed parameters {
 \begin{frame}[fragile]{modelブロック}
   \begin{lstlisting}[language=Stan]
 model {
-  y ~ gaussian_dlm_obs(F, G, V, W, m0, C0);
+  y ~ gaussian_dlm_obs(F, G, v, w, M0, C0);
 }
   \end{lstlisting}
 \end{frame}
@@ -351,8 +354,8 @@ model {
   \begin{lstlisting}[language=R]
 ## Stanにわたすデータのリスト
 stan_data <- list(N = length(Nile),
-                  y = matrix(Nile, 1),
-                  m0 = c(100, 1),
+                  Y = matrix(Nile, 1),
+                  M0 = c(100, 1),
                   C0 = matrix(c(1e7, 0, 0, 1e7), 2, 2))
 
 ## あてはめ
@@ -418,9 +421,9 @@ fore <- dlmForecast(mod, nAhead = nyear)
 \begin{frame}{まとめ}
   \begin{itemize}
   \item \textsf{Stan}の\texttt{gaussian\_dlm\_obs}分布で動的線形モデルの
-    パラメータを推定する。
+    パラメータを推定することができる。
   \item 推定したパラメータの値を\textsf{dlm}パッケージの関数で使用して
-    カルマンフィルタを適用する。
+    カルマンフィルタを適用できる。
   \end{itemize}
 \end{frame}
 

@@ -28,8 +28,8 @@ dev.off()
 
 ## Stanにわたすデータのリスト
 stan_data <- list(N = length(Nile),
-                  y = matrix(Nile, 1),
-                  m0 = 100,
+                  Y = matrix(Nile, 1),
+                  M0 = 100,
                   C0 = matrix(100, 1, 1))
 
 ## あてはめ
@@ -96,8 +96,8 @@ dev.off()
 
 ## Stanにわたすデータのリスト
 stan_data <- list(N = length(Nile),
-                  y = matrix(Nile, 1),
-                  m0 = c(100, 1),
+                  Y = matrix(Nile, 1),
+                  M0 = c(100, 1),
                   C0 = matrix(c(1e7, 0, 0, 1e7), 2, 2))
 
 ## あてはめ

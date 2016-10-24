@@ -2,19 +2,19 @@
 
 data {
   int<lower=0>  N;   // レコードの数
-  matrix[1, N]  y;   // データ
-  real          m0;  // 状態の初期値
+  matrix[1, N]  Y;   // データ
+  real          M0;  // 状態の初期値
   cov_matrix[1] C0;  // 共分散の初期値
 }
 
 transformed data {
   matrix[1, 1]  F;
   matrix[1, 1]  G;
-  vector[1]     vm0; // サイズ1のベクトル
+  vector[1]     m0; // サイズ1のベクトル
 
   F[1, 1] = 1;
   G[1, 1] = 1;
-  vm0[1] = m0;
+  m0[1] = M0;
 }
 
 parameters {
@@ -22,13 +22,13 @@ parameters {
 }
 
 transformed parameters {
-  vector[1]     V;
-  cov_matrix[1] W;
+  vector[1]     v;
+  cov_matrix[1] w;
 
-  V[1] = s2[1];
-  W[1, 1] = s2[2];
+  v[1] = s2[1];
+  w[1, 1] = s2[2];
 }
 
 model {
-  y ~ gaussian_dlm_obs(F, G, V, W, vm0, C0);
+  Y ~ gaussian_dlm_obs(F, G, v, w, m0, C0);
 }
