@@ -1,7 +1,7 @@
 // ローカルレベルモデル
 
 data {
-  int<lower=0>  N;   // レコードの数
+  int<lower=0>  N;   // データ点の数
   matrix[1, N]  Y;   // データ
   real          M0;  // 状態の初期値
   cov_matrix[1] C0;  // 共分散の初期値

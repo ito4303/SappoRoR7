@@ -117,9 +117,9 @@
 \end{frame}
 
 %% カルマンフィルター
-\begin{frame}{カルマンフィルター}
+\begin{frame}{カルマンフィルタ}
   \begin{itemize}
-  \item 行列計算により、フィルタリング・平滑化・予測をおこなう
+  \item 行列計算により、フィルタリング・平滑化・予測をおこなう\footnote{具体的な計算式は、野村俊一『カルマンフィルタ---Rを使った時系列予測と状態空間モデル』共立出版, 2016などを参照}
      \begin{description}
      \item[フィルタリング] $\{y_1,y_2,\dots,y_t\}$から$\theta_t$を推定
      \item[平滑化] $\{y_1,y_2,\dots,y_t\}$から$\{\theta_1,\theta_2,\dots,\theta_t\}$を推定
@@ -155,7 +155,7 @@ data(Nile)
 \begin{frame}[fragile]{Stanコード: dataブロック}
   \begin{lstlisting}[language=Stan]
 data {
-  int<lower=0>  N;   // レコードの数
+  int<lower=0>  N;   // データ点の数
   matrix[1, N]  Y;   // データ
   real          M0;  // 状態の初期値
   cov_matrix[1] C0;  // 共分散の初期値
@@ -295,7 +295,7 @@ smo <- dlmSmooth(Nile, mod)
 \begin{frame}[fragile]{dataブロック}
   \begin{lstlisting}[language=Stan]
 data {
-  int<lower=0>  N;  // レコードの数
+  int<lower=0>  N;  // データ点の数
   matrix[1, N]  Y;  // データ
   vector[2]     M0;
   cov_matrix[2] C0;

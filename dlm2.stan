@@ -1,7 +1,7 @@
 // トレンドモデル
 
 data {
-  int<lower=0>  N;  // レコードの数
+  int<lower=0>  N;  // データ点の数
   matrix[1, N]  Y;  // データ
   vector[2]     M0;
   cov_matrix[2] C0;
