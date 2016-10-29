@@ -97,6 +97,10 @@
 %% Stan
 \begin{frame}{Stan}
   \begin{itemize}
+  \item 統計的プログラミング言語
+    \begin{itemize}
+    \item MCMC (HMC, NUTS)によるベイズ推定
+    \end{itemize}
   \item 観測方程式と状態方程式をそのまま\textsf{Stan}コードにすれば、状態の推定ができる
     \begin{itemize}
     \item 『岩波データサイエンスVol.1』や『StanとRでベイズ統計モデリング』の松浦さんのコードを参照
@@ -116,7 +120,7 @@
   \end{itemize}
 \end{frame}
 
-%% カルマンフィルター
+%% カルマンフィルタ
 \begin{frame}{カルマンフィルタ}
   \begin{itemize}
   \item 行列計算により、フィルタリング・平滑化・予測をおこなう\footnote{具体的な計算式は、野村俊一『カルマンフィルタ---Rを使った時系列予測と状態空間モデル』共立出版, 2016などを参照}
@@ -242,6 +246,26 @@ smo <- dlmSmooth(Nile, mod)
 \end{frame}
 
 %% 予測
+\begin{frame}[fragile]{予測のRコード}
+  \begin{lstlisting}[language=R]
+## カルマンフィルター
+filt <- dlmFilter(Nile, mod)
+
+## 状態
+m <- filt$m[-1]
+
+## 予測
+## 予測する年数
+nyear <- 10
+
+## 予測期間の初期値の設定
+m0(mod) <- tail(m, 1)
+C0(mod) <- diag(1) * s2[2]
+
+fore <- dlmForecast(mod, nAhead = nyear)
+  \end{lstlisting}
+\end{frame}
+
 \begin{frame}{予測}
   \begin{center}
     \includegraphics[width=10cm]{dlm1_predict}
@@ -379,7 +403,7 @@ smo <- dlmSmooth(Nile, mod)
   \end{lstlisting}
 \end{frame}
 
-\begin{frame}[fragile]{Rコード}
+\begin{frame}[fragile]{予測のRコード}
   \begin{lstlisting}[language=R]
 ## カルマンフィルター
 filt <- dlmFilter(Nile, mod)
