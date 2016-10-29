@@ -200,7 +200,7 @@ transformed parameters {
 \begin{frame}[fragile]{Stanコード: modelブロック}
   \begin{lstlisting}[language=Stan]
 model {
-  y ~ gaussian_dlm_obs(F, G, v, w, m0, C0);
+  Y ~ gaussian_dlm_obs(F, G, v, w, m0, C0);
 }
   \end{lstlisting}
 \end{frame}
@@ -368,7 +368,7 @@ transformed parameters {
 \begin{frame}[fragile]{modelブロック}
   \begin{lstlisting}[language=Stan]
 model {
-  y ~ gaussian_dlm_obs(F, G, v, w, M0, C0);
+  Y ~ gaussian_dlm_obs(F, G, v, w, M0, C0);
 }
   \end{lstlisting}
 \end{frame}
