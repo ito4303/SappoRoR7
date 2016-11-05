@@ -3,18 +3,16 @@
 data {
   int<lower=0>  N;   // データ点の数
   matrix[1, N]  Y;   // データ
-  real          M0;  // 状態の初期値
+  vector[1]     M0;  // 状態の初期値
   cov_matrix[1] C0;  // 共分散の初期値
 }
 
 transformed data {
   matrix[1, 1]  F;
   matrix[1, 1]  G;
-  vector[1]     m0; // サイズ1のベクトル
 
   F[1, 1] = 1;
   G[1, 1] = 1;
-  m0[1] = M0;
 }
 
 parameters {
@@ -30,5 +28,5 @@ transformed parameters {
 }
 
 model {
-  Y ~ gaussian_dlm_obs(F, G, v, w, m0, C0);
+  Y ~ gaussian_dlm_obs(F, G, v, w, M0, C0);
 }

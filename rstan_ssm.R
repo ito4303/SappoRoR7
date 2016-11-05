@@ -29,7 +29,7 @@ dev.off()
 ## Stanにわたすデータのリスト
 stan_data <- list(N = length(Nile),
                   Y = matrix(Nile, 1),
-                  M0 = 100,
+                  M0 = array(100),
                   C0 = matrix(100, 1, 1))
 
 ## あてはめ
